@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIKGU KILAT — Misi Ejaan & Imbuhan</title>
+<style>
+:root{--navy:#081b3d;--blue:#1264d8;--cyan:#58e7ff;--yellow:#ffe45c;--pink:#ff4fa3;--white:#f7fbff;--green:#5cf2b0;--red:#ff536b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--white);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 15% 12%,#2456a8 0,transparent 28%),radial-gradient(circle at 90% 75%,#522b9d 0,transparent 28%),linear-gradient(145deg,#06132d,#102e62 55%,#09162e);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.24;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:28px 28px}
+.wrap{width:min(1120px,94vw);margin:auto;padding:22px 0 34px}
+header{text-align:center;margin-bottom:18px}
+.kicker{display:inline-block;padding:6px 15px;border:1px solid #ffffff55;border-radius:30px;background:#ffffff13;color:var(--cyan);font-weight:800;letter-spacing:2px;font-size:.78rem}
+h1{font-size:clamp(2.5rem,8vw,5.5rem);line-height:.95;margin:12px 0 8px;font-weight:1000;letter-spacing:-3px;text-shadow:0 5px 0 #12346a,0 10px 25px #0009}
+h1 span{color:var(--yellow)}
+.subtitle{color:#dceaff;font-weight:650;margin:0}
+.panel{background:linear-gradient(135deg,#ffffff1c,#ffffff0a);border:1px solid #ffffff35;border-radius:24px;box-shadow:0 18px 55px #0005;backdrop-filter:blur(10px)}
+.topbar{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:12px 16px;margin:18px 0;flex-wrap:wrap}
+.stat{display:flex;align-items:center;gap:8px;font-weight:850}.stat b{font-size:1.2rem;color:var(--yellow);font-variant-numeric:tabular-nums}
+.hearts{letter-spacing:3px;color:#ff6684;font-size:1.35rem}
+.gamegrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);gap:16px}
+.game{padding:clamp(16px,3vw,28px);position:relative;overflow:hidden;min-height:440px}
+.game:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:#35d9ff13;right:-100px;top:-100px;pointer-events:none}
+.questionNo{color:var(--cyan);font-weight:900;letter-spacing:1.5px;font-size:.82rem}
+.question{font-size:clamp(1.35rem,3vw,2.15rem);font-weight:900;margin:12px 0 22px;line-height:1.2}
+.options{display:grid;gap:12px;position:relative;z-index:1}
+.option{width:100%;border:2px solid #ffffff45;border-radius:16px;padding:16px 18px;background:linear-gradient(110deg,#ffffff1b,#ffffff0b);color:white;text-align:left;font-size:1.05rem;font-weight:800;cursor:pointer;display:flex;gap:14px;align-items:center;transition:.18s;min-height:64px}
+.option .letter{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#ffffff22;color:var(--yellow);font-weight:1000;flex:none}
+.option:hover,.option.selected{border-color:var(--yellow);background:#ffe45c25;transform:translateX(4px);box-shadow:0 0 22px #ffe45c22}
+.option.correct{border-color:var(--green);background:#5cf2b033}.option.wrong{border-color:var(--red);background:#ff536b33}
+.feedback{min-height:32px;margin-top:14px;font-weight:800;color:var(--yellow)}
+.side{padding:18px;display:flex;flex-direction:column;gap:14px}
+.side h2{font-size:1rem;margin:0;color:var(--cyan);letter-spacing:1px}
+.cameraBox{position:relative;aspect-ratio:4/3;background:#020916;border-radius:16px;overflow:hidden;border:2px solid #ffffff35}
+video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#handCanvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none}
+.camstatus{font-size:.82rem;color:#d7e7ff;line-height:1.45}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+button.action{border:0;border-radius:13px;padding:12px 16px;font-weight:900;cursor:pointer;color:#081b3d;background:linear-gradient(135deg,var(--yellow),#ffad46);box-shadow:0 5px 0 #b66a20;transition:.12s}
+button.action:active{transform:translateY(3px);box-shadow:0 2px 0 #b66a20}
+button.secondary{background:#ffffff18;color:white;border:1px solid #ffffff45;box-shadow:none}
+.hint{font-size:.82rem;color:#dceaff;line-height:1.5;margin:0}
+.progress{height:9px;border-radius:10px;background:#ffffff20;overflow:hidden;margin-top:18px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--yellow));transition:width .3s}
+.overlay{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:20px;background:#020a1bdc;backdrop-filter:blur(9px)}
+.modal{width:min(570px,95vw);padding:30px;text-align:center}
+.modal h2{font-size:2rem;margin:4px 0 10px;color:var(--yellow)}
+.modal p{color:#e2edff;line-height:1.6}
+.modal .action{font-size:1rem;margin-top:12px}
+.hidden{display:none!important}
+.timerbar{height:7px;background:#ffffff20;border-radius:9px;overflow:hidden;margin:8px 0 0}
+.timerbar div{height:100%;width:100%;background:linear-gradient(90deg,#62f2b4,#ffe45c,#ff536b);transition:width .2s linear}
+.instructions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.instructions div{padding:10px 6px;border-radius:12px;background:#ffffff10;font-size:.78rem;color:#e4efff}
+.instructions strong{display:block;color:var(--yellow);font-size:1rem;margin-bottom:3px}
+#zap{position:fixed;inset:0;z-index:8;pointer-events:none;opacity:0}
+#zap.show{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:0}15%{opacity:.85;background:#aaf8ff55}45%{opacity:.1}65%{opacity:.7;background:#fff}100%{opacity:0}}
+@media(max-width:760px){.gamegrid{grid-template-columns:1fr}.game{min-height:unset}.side{order:2}.topbar{justify-content:center}.stat{font-size:.9rem}.instructions{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="zap"></div>
+<div class="wrap">
+<header>
+ <div class="kicker">⚡ AKADEMI BAHASA • MISI PANTAS</div>
+ <h1>CIKGU <span>KILAT</span></h1>
+ <p class="subtitle">Tepatkan ejaan, kuasai imbuhan, lancarkan sambaran!</p>
+</header>
+<div class="topbar panel">
+ <div class="stat">⭐ SKOR <b id="score">0</b></div>
+ <div class="stat">❤️ NYAWA <span class="hearts" id="lives">❤️❤️❤️</span></div>
+ <div class="stat">⏱ MASA <b id="time">20</b>s</div>
+ <div class="stat">📚 SOALAN <b id="count">1/10</b></div>
+</div>
+<div class="gamegrid">
+ <main class="game panel">
+  <div class="questionNo" id="qtag">SOALAN 01 • CABARAN BAHASA</div>
+  <div class="question" id="question">Bersedia untuk misi pertama?</div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback" aria-live="polite">Pilih jawapan yang betul untuk mendapat mata.</div>
+  <div class="timerbar"><div id="timerFill"></div></div>
+  <div class="progress"><div id="progressFill"></div></div>
+ </main>
+ <aside class="side panel">
+  <h2>📷 RADAR GESTUR TANGAN</h2>
+  <div class="cameraBox">
+   <video id="video" autoplay playsinline muted></video>
+   <canvas id="handCanvas"></canvas>
+  </div>
+  <div class="camstatus" id="camStatus">Kamera belum diaktifkan. Benarkan akses webcam untuk bermain menggunakan tangan.</div>
+  <div class="controls">
+   <button class="action" id="startCam">Aktifkan Kamera</button>
+   <button class="action secondary" id="soundBtn">🔊 Bunyi: ON</button>
+  </div>
+  <p class="hint"><b>Cara bermain:</b> Halakan tapak tangan pada pilihan sehingga terkunci. Kemudian genggam tangan (penumbuk) atau tarik tangan ke arah kamera untuk menyambar jawapan.</p>
+  <div class="instructions">
+   <div><strong>🖐️</strong>Halakan tapak tangan</div>
+   <div><strong>🎯</strong>Tahan untuk kunci</div>
+   <div><strong>⚡</strong>Genggam / tarik</div>
+  </div>
+  <p class="hint">Tanpa kamera? Klik pilihan jawapan dan tekan <b>Sahkan Jawapan</b>.</p>
+ </aside>
+</div>
+</div>
+
+<div class="overlay" id="intro">
+ <div class="modal panel">
+  <div style="font-size:3rem">⚡🧠⚡</div>
+  <h2>Selamat datang ke CIKGU KILAT!</h2>
+  <p>Uji kemahiran kesalahan ejaan dan imbuhan. Jawab 10 soalan, kumpul skor dan jaga 3 nyawa anda.</p>
+  <p><b>Mod gestur:</b> buka kamera, halakan tapak tangan pada jawapan, tunggu sehingga pilihan terkunci, kemudian genggam tangan untuk melancarkan petir.</p>
+  <button class="action" id="playBtn">MULA PERMAINAN</button>
+ </div>
+</div>
+<div class="overlay hidden" id="endScreen">
+ <div class="modal panel">
+  <div style="font-size:3rem" id="endIcon">🏆</div>
+  <h2 id="endTitle">Misi selesai!</h2>
+  <p id="endText"></p>
+  <button class="action" id="againBtn">MAIN SEMULA</button>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script>
+const questions=[
+ {q:"Pilih ejaan kata yang betul.",a:["mengkaji","mengkaji-i","mengkaji kan"],c:0,why:"Ejaan yang betul ialah “mengkaji”. Imbuhan meN- digabungkan dengan kata dasar kaji."},
+ {q:"Pilih ayat yang menggunakan imbuhan dengan betul.",a:["Mereka sedang berbincang tentang tugasan.","Mereka sedang berbincangkan tentang tugasan.","Mereka sedang membincang tentang tugasan."],c:0,why:"“Berbincang” ialah bentuk kata kerja yang betul dalam ayat ini."},
+ {q:"Yang manakah ejaan yang betul?",a:["aturcara","atur cara","atur-chara"],c:1,why:"“Atur cara” dieja sebagai dua perkataan."},
+ {q:"Pilih perkataan berimbuhan yang betul.",a:["pelaksanaan","perlaksanaan","pelaksana'an"],c:0,why:"Bentuk yang baku ialah “pelaksanaan”, daripada kata dasar laksana."},
+ {q:"Pilih ayat yang betul dari segi imbuhan.",a:["Adik memperbesarkan lukisan itu.","Adik memperbesar lukisan itu.","Adik membesarkan lagi sekali lukisan itu."],c:1,why:"Kata adjektif “besar” menerima apitan memper-...-kan dalam bentuk “memperbesar” menurut penggunaan baku."},
+ {q:"Pilih ejaan kata majmuk yang betul.",a:["kerjasama","kerja sama","kerja-sama"],c:0,why:"“Kerjasama” ialah kata majmuk mantap yang dieja rapat."},
+ {q:"Lengkapkan ayat: Guru itu ____ murid-muridnya supaya rajin membaca.",a:["menasihati","menasehati","menasihatkan"],c:0,why:"“Menasihati seseorang” bermaksud memberikan nasihat kepada orang tersebut."},
+ {q:"Pilih perkataan yang dieja dengan betul.",a:["diubahsuai","diubah suai","di ubahsuai"],c:1,why:"Kata majmuk “ubah suai” dieja terpisah; apabila menerima awalan di-, bentuknya “diubah suai”."},
+ {q:"Pilih bentuk imbuhan yang betul.",a:["ketidakadilan","ketidak adilan","ke-tidakadilan"],c:0,why:"Apitan ke-...-an pada kata “tidak adil” membentuk “ketidakadilan”."},
+ {q:"Pilih ayat yang betul.",a:["Mereka memperolehi keputusan cemerlang.","Mereka memperolehi kan keputusan cemerlang.","Mereka memperoleh keputusan cemerlang."],c:2,why:"Kata kerja yang baku ialah “memperoleh”, bukan “memperolehi”."}
+];
+let idx=0,score=0,lives=3,timeLeft=20,tick=null,selected=-1,locked=false,finished=false,soundOn=true,stream=null,mpCamera=null;
+const $=id=>document.getElementById(id);
+function beep(freq=600,dur=.12,type="sine"){if(!soundOn)return;try{const ctx=new(window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.08,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+dur);o.onended=()=>ctx.close()}catch(e){}}
+function render(){
+ const q=questions[idx];selected=-1;locked=false;finished=false;
+ $("qtag").textContent=`SOALAN ${String(idx+1).padStart(2,"0")} • CABARAN BAHASA`;
+ $("question").textContent=q.q;$("count").textContent=`${idx+1}/10`;
+ $("options").innerHTML="";
+ q.a.forEach((a,i)=>{const b=document.createElement("button");b.className="option";b.innerHTML=`<span class="letter">${String.fromCharCode(65+i)}</span><span>${a}</span>`;b.onclick=()=>select(i);$("options").appendChild(b)});
+ $("feedback").textContent="Halakan tangan pada jawapan atau klik pilihan.";
+ $("progressFill").style.width=(idx/10*100)+"%";startTimer();
+}
+function select(i){
+ if(locked||finished)return;
+ selected=i;[...$("options").children].forEach((b,n)=>b.classList.toggle("selected",n===i));
+ $("feedback").textContent=`Pilihan ${String.fromCharCode(65+i)} dipilih. ${stream?"Genggam tangan untuk sambaran!":"Tekan Sahkan Jawapan untuk meneruskan."}`;
+ beep(480,.08);
+}
+function confirmAnswer(){
+ if(finished||selected<0)return;
+ locked=true;finished=true;clearInterval(tick);
+ const q=questions[idx],buttons=[...$("options").children];
+ buttons[q.c].classList.add("correct");
+ if(selected===q.c){score+=10; $("feedback").textContent="⚡ TEPAT! "+q.why;beep(880,.22,"triangle");$("zap").classList.remove("show");void $("zap").offsetWidth;$("zap").classList.add("show")}
+ else{lives--;buttons[selected].classList.add("wrong");$("feedback").textContent="Belum tepat. "+q.why;beep(180,.25,"sawtooth")}
+ $("score").textContent=score;$("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);
+ $("progressFill").style.width=((idx+1)/10*100)+"%";
+ [...buttons].forEach(b=>b.disabled=true);
+ setTimeout(()=>{if(lives<=0){end(false)}else if(idx===9){end(true)}else{idx++;render()}},2100);
+}
+function startTimer(){clearInterval(tick);timeLeft=20;$("time").textContent=timeLeft;$("timerFill").style.width="100%";tick=setInterval(()=>{timeLeft--;$("time").textContent=timeLeft;$("timerFill").style.width=(timeLeft/20*100)+"%";if(timeLeft<=0){clearInterval(tick);if(!finished){finished=true;lives--;$("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);$("feedback").textContent="Masa tamat! "+questions[idx].why;beep(150,.25,"sawtooth");locked=true;setTimeout(()=>{if(lives<=0)end(false);else if(idx===9)end(true);else{idx++;render()}},1900)}}},1000)}
+function end(won){clearInterval(tick);$("endScreen").classList.remove("hidden");$("endIcon").textContent=won?"🏆":"⚡";$("endTitle").textContent=won?"Misi Cemerlang!":"Misi Tamat";$("endText").textContent=`Skor akhir anda: ${score}/100. ${won?"Tahniah kerana berjaya melengkapkan semua 10 soalan!":"Teruskan berlatih. Cuba lagi untuk tingkatkan skor!"}`}
+function startGame(){score=0;lives=3;idx=0;$("score").textContent=score;$("lives").textContent="❤️❤️❤️";$("intro").classList.add("hidden");$("endScreen").classList.add("hidden");render()}
+$("playBtn").onclick=startGame;$("againBtn").onclick=startGame;
+$("soundBtn").onclick=()=>{soundOn=!soundOn;$("soundBtn").textContent=soundOn?"🔊 Bunyi: ON":"🔇 Bunyi: OFF";if(soundOn)beep()};
+$("options").addEventListener("dblclick",()=>confirmAnswer());
+
+async function activateCamera(){
+ if(!navigator.mediaDevices?.getUserMedia){$("camStatus").textContent="Pelayar ini tidak menyokong akses kamera. Cuba Chrome dan gunakan HTTPS.";return}
+ try{
+  $("camStatus").textContent="Meminta kebenaran kamera…";
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:640,height:480},audio:false});
+  $("video").srcObject=stream;await $("video").play();
+  $("camStatus").textContent="Kamera aktif. Tunggu MediaPipe mengesan tangan.";
+  if(!window.Hands){$("camStatus").textContent="MediaPipe tidak dapat dimuatkan. Semak sambungan internet atau gunakan kawalan klik.";return}
+  const canvas=$("handCanvas"),ctx=canvas.getContext("2d");
+  const hands=new Hands({locateFile:file=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+  hands.setOptions({maxNumHands:1,modelComplexity:1,minDetectionConfidence:.65,minTrackingConfidence:.6});
+  let fistSince=0,lastArea=0,pullReady=false;
+  hands.onResults(results=>{
+   canvas.width=$("video").videoWidth||640;canvas.height=$("video").videoHeight||480;ctx.clearRect(0,0,canvas.width,canvas.height);
+   const lm=results.multiHandLandmarks?.[0];if(!lm){$("camStatus").textContent="Kamera aktif — tunjukkan tapak tangan kepada kamera.";fistSince=0;return}
+   const x=lm[9].x,y=lm[9].y;
+   // Palm cursor maps to the answer list. A brief dwell locks the nearest option.
+   const rect=$("video").getBoundingClientRect(),displayY=(1-y)*rect.height;
+   const opts=[...$("options").children],or=$("options").getBoundingClientRect();
+   const localY=displayY+(rect.top-or.top);
+   if(opts.length&&!locked){
+    let nearest=-1,best=Infinity;
+    opts.forEach((el,i)=>{const r=el.getBoundingClientRect(),cy=r.top+r.height/2;const d=Math.abs((rect.top+displayY)-cy);if(d<best){best=d;nearest=i}});
+    if(best<Math.max(70,rect.height*.22)){select(nearest);if(!window._dwell)window._dwell=Date.now();if(Date.now()-window._dwell>850){locked=true;select(nearest);$("feedback").textContent="🎯 Jawapan dikunci! Genggam tangan untuk sambaran.";}}
+    else window._dwell=0;
+   }
+   // Draw a glowing palm cursor.
+   const px=x*canvas.width,py=y*canvas.height;ctx.beginPath();ctx.arc(px,py,19,0,Math.PI*2);ctx.fillStyle="#ffe45c55";ctx.fill();ctx.lineWidth=4;ctx.strokeStyle="#fff36a";ctx.stroke();
+   const tips=[8,12,16,20],bases=[6,10,14,18];let extended=0;tips.forEach((t,i)=>{if(lm[t].y<lm[bases[i]].y-.025)extended++});
+   const area=Math.abs(lm[5].x-lm[17].x)*Math.abs(lm[0].y-lm[9].y);
+   const pulling=area>lastArea*1.23&&area>.025;lastArea=area*.75+lastArea*.25;
+   if(extended<=1){if(!fistSince)fistSince=Date.now();if(Date.now()-fistSince>250&&selected>=0){if(locked)confirmAnswer();else confirmAnswer();fistSince=0}}
+   else{fistSince=0}
+   if(pulling&&selected>=0&&locked)confirmAnswer();
+   $("camStatus").textContent=selected>=0?(locked?"Jawapan dikunci — genggam untuk menyambar!":"Pilihan dikesan — tahan tangan seketika untuk kunci."):"Gerakkan tapak tangan ke atas pilihan jawapan.";
+  });
+  mpCamera=new Camera($("video"),{onFrame:async()=>{await hands.send({image:$("video")})},width:640,height:480});mpCamera.start();
+  $("startCam").textContent="Kamera Aktif";$("startCam").disabled=true;
+ }catch(err){$("camStatus").textContent="Akses kamera gagal. Benarkan permission kamera dan buka fail melalui HTTPS atau localhost. ("+err.message+")"}
+}
+$("startCam").onclick=activateCamera;
+$("options").addEventListener("click",()=>{if(!stream){$("feedback").textContent="Pilihan dipilih. Tekan dua kali pada pilihan atau gunakan butang Sahkan."}});
+const confirmBtn=document.createElement("button");confirmBtn.className="action";confirmBtn.textContent="⚡ Sahkan Jawapan";confirmBtn.style.marginTop="10px";confirmBtn.onclick=confirmAnswer;$("options").after(confirmBtn);
+</script>
+</body>
+</html>
